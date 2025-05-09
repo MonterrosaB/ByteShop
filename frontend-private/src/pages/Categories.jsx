@@ -1,66 +1,68 @@
 
 import React, { useState, useEffect, use} from "react";
-import RegisterModels from "../components/Models/RegisterModels";
-import ListModels from "../components/Models/ListModels";
+import RegisterCategory from "../components/Categories/RegisterCategories";
+import ListCategories from "../components/Categories/ListCategories";
 
-const Models = () => {
+const Categories = () => {
 
     const [activeTab, setActiveTab] = useState("list");
-    const [models, setModels] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [modelName, setModelName]=useState("");
+    const [categoryName, setCategoryName]=useState("");
+    const [categoryDescription, setCategoryDescription]=useState("");
     const [id, setId]=useState("");
 
 
-    const fetchModels = async () => {
-    const response = await fetch("http://localhost:4000/api/models");
+    const fetchCategories = async () => {
+    const response = await fetch("http://localhost:4000/api/categories");
     
     if (!response.ok) {
-        throw new Error("Hubo un error al obtener las marcas");
+        throw new Error("Hubo un error al obtener las categorias");
     }
 
     const data = await response.json();
-    setModels(data);
+    setCategories(data);
     setLoading(false);
     
     }
 
-    const saveModels = async (e) => {
+    const saveCategory = async (e) => {
     e.preventDefault();
 
-    const newModel={
-        name: modelName
+    const newCategory={
+        name: categoryName,
+        description : categoryDescription
     }
 
-    const response = await fetch("http://localhost:4000/api/models", {
+    const response = await fetch("http://localhost:4000/api/categories", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(newModel),
+        body: JSON.stringify(newCategory),
     });
 
     if (!response.ok) {
-        throw new Error("Hubo un error al registrar el empleado");
+        throw new Error("Hubo un error al registrar la categoría");
       }
 
     const data = await response.json();
 
-    alert("Modelo registrado correctamente");
-    fetchModels();
-    setModelName("");
+    alert("Categoría registrada correctamente");
+    fetchCategories();
+    setCategoryName("");
 
     }
 
 
     // useEffect 
     useEffect(() => {
-        fetchModels();
+        fetchCategories();
     }
     , []);
 
-    const deleteModel = async (id)=>{
-        const response = await fetch(`http://localhost:4000/api/models/${id}`, {
+    const deleteCategory = async (id)=>{
+        const response = await fetch(`http://localhost:4000/api/categories/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -74,29 +76,31 @@ const Models = () => {
         const data = await response.json();
 
         alert("Modelo eliminado correctamente");
-        fetchModels();
+        fetchCategories();
 
     }
 
-const updateModels = async (model) => {
-    setId(model._id);
-    setModelName(model.name);
+const updateCategory = async (category) => {
+    setId(category._id);
+    setCategoryName(category.name);
+    setCategoryDescription(category.description);
     setActiveTab("form");
 }
 
 const handleEdit = async (e) => {
     e.preventDefault();
 
-    const updatedModel = {
-        name: modelName,
+    const updateCategories = {
+        name: categoryName,
+        description : categoryDescription
     };
 
-    const response = await fetch(`http://localhost:4000/api/models/${id}`, {
+    const response = await fetch(`http://localhost:4000/api/categories/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedModel),
+        body: JSON.stringify(updateCategories),
     });
 
     if (!response.ok) {
@@ -106,9 +110,10 @@ const handleEdit = async (e) => {
       
       const data = await response.json();
       alert("Modelo actualizado exitosamente");
-      setModelName("");
+      setCategoryName("");
+      setCategoryDescription("");
       setId(""); // Limpiar el ID
-      fetchModels(); 
+      fetchCategories(); 
 
 
 }
@@ -117,7 +122,7 @@ const handleEdit = async (e) => {
 return(<>
    <div className="min-h-screen bg-gray-100 p-6">
         <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Modelos</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Categorías</h1>
           <div>
             <div className="flex border-b border-gray-200 mb-4">
               <button
@@ -136,21 +141,23 @@ return(<>
             <div>
               {activeTab === "list" && (
                 <div>
-                    <ListModels
-                    models={models}
+                    <ListCategories
+                    categories={categories}
                     loading={loading}
-                    deleteModel={deleteModel}
-                    updateModels={updateModels}
+                    deleteCategories={deleteCategory}
+                    updateCategories={updateCategory}
                     
                     />
                 </div>
               )}
               {activeTab === "form" && (
                 <div>
-                    <RegisterModels
-                    saveModels={saveModels}
-                    setModelName={setModelName}
-                    modelName={modelName}
+                    <RegisterCategory
+                    saveCategory={saveCategory}
+                    setCategoryName={setCategoryName}
+                    setCategoryDescription={setCategoryDescription}
+                    categoryName={categoryName}
+                    categoryDescription={categoryDescription}
                     handleEdit={handleEdit}
                     id={id}
                     
@@ -167,4 +174,4 @@ return(<>
 )
 }
 
-export default Models;
+export default Categories;
